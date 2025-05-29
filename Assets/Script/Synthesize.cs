@@ -9,7 +9,7 @@ using UnityEngine.Rendering.Universal;
 public class Synthesize : MonoBehaviour
 {
     //[Header("Generation Settings")]
-    private int totalImages = 20;
+    private int totalImages = 8000;
     private float trainSplit = 0.7f;
     private float validSplit = 0.2f;
     private string outputFolder = "SyntheticPoolData";
@@ -32,7 +32,7 @@ public class Synthesize : MonoBehaviour
     private float minPlayerHeight = 1.0f; // Minimum player height in meters
     private float maxPlayerHeight = 1.6f; // Maximum player height in meters
     private float minDistanceFromTable = 0.0f; // Minimum distance from table edge
-    private float maxDistanceFromTable = 1.0f; // Maximum distance from table edge
+    private float maxDistanceFromTable = 2.0f; // Maximum distance from table edge
     private float minLookAngle = -15f; // Minimum angle to look down
     private float maxLookAngle = 5f; // Maximum angle to look down
     private int renderWidth = 512; 
@@ -41,7 +41,7 @@ public class Synthesize : MonoBehaviour
     //[Header("Lighting Settings")]
     [SerializeField] private Light[] sceneLights;
     private float minIntensity = 1.0f; // Increased minimum intensity
-    private float maxIntensity = 3.0f; // Increased maximum intensity
+    private float maxIntensity = 2.0f; // Increased maximum intensity
     private float ambientIntensity = 1.0f; // Added ambient intensity
     
     //[Header("Debug Settings")]
@@ -138,11 +138,11 @@ public class Synthesize : MonoBehaviour
             Debug.Log($"Got effects: Bloom={gotBloom}, ColorAdjustments={gotColorAdjustments}, Vignette={gotVignette}, CA={gotCA}, Grain={gotGrain}");
 
             // Add missing effects
-            if (!gotBloom) bloom = postProcessVolume.profile.Add<Bloom>(true);
-            if (!gotColorAdjustments) colorAdjustments = postProcessVolume.profile.Add<ColorAdjustments>(true);
-            if (!gotVignette) vignette = postProcessVolume.profile.Add<Vignette>(true);
-            if (!gotCA) chromaticAberration = postProcessVolume.profile.Add<ChromaticAberration>(true);
-            if (!gotGrain) filmGrain = postProcessVolume.profile.Add<FilmGrain>(true);
+            // if (!gotBloom) bloom = postProcessVolume.profile.Add<Bloom>(true);
+            // if (!gotColorAdjustments) colorAdjustments = postProcessVolume.profile.Add<ColorAdjustments>(true);
+            // if (!gotVignette) vignette = postProcessVolume.profile.Add<Vignette>(true);
+            // if (!gotCA) chromaticAberration = postProcessVolume.profile.Add<ChromaticAberration>(true);
+            // if (!gotGrain) filmGrain = postProcessVolume.profile.Add<FilmGrain>(true);
 
             // // Set initial values to make effects obvious
             // if (bloom != null)
@@ -329,10 +329,13 @@ public class Synthesize : MonoBehaviour
         if (tableMaterial == null || tableTextures == null || tableTextures.Length == 0) return;
 
         // Select a random texture from the list
-        Texture2D randomTexture = tableTextures[Random.Range(0, tableTextures.Length)];
+        //Texture2D randomTexture = tableTextures[Random.Range(0, tableTextures.Length)];
+
+        //Texture2D tex = tableTextures[0];
+        
         
         // Apply the new texture to the table material
-        tableMaterial.SetTexture("_BaseMap", randomTexture);
+        //tableMaterial.SetTexture("_BaseMap", tex);
         
         // Randomize roughness for variety in appearance
         float roughness = Random.Range(minTableRoughness, maxTableRoughness);
@@ -341,6 +344,20 @@ public class Synthesize : MonoBehaviour
         // Randomize normal map intensity slightly for texture variation
         float normalIntensity = Random.Range(0.8f, 1.2f);
         tableMaterial.SetFloat("_BumpScale", normalIntensity);
+
+        float maxColor = 0.5f;
+        // Set random color multiplier for the table material
+        Color randomColor = new Color(
+            Random.Range(0.0f, maxColor),  // R: Keep somewhat bright
+            Random.Range(0.0f, maxColor),  // G: Keep somewhat bright
+            Random.Range(0.0f, maxColor),  // B: Keep somewhat bright
+            1.0f
+        );
+        tableMaterial.SetColor("_BaseColor", randomColor);
+
+        // // Desaturate the table material
+        // float saturation = Random.Range(0.0f, 0.3f); // Random desaturation between 0-30%
+        // tableMaterial.SetFloat("_Saturation", saturation);
     }
 
     void RandomizeSkybox()
